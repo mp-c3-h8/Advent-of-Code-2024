@@ -21,5 +21,22 @@ for l in open('input.txt'):
             
 print(res)
 
+# capture group variant
+# https://www.reddit.com/r/adventofcode/comments/1h5frsp/comment/m05of6n
+res = 0
+can_do = True
+for l in open('input.txt'):
+    for (a,b,do,dont) in re.findall(r"mul\((\d+),(\d+)\)|(do\(\))|(don't\(\))", l):
+        if do:
+            can_do = True
+        elif dont:
+            can_do = False
+        elif can_do:
+            res += int(a) * int(b)   
+            
+print(res)
+            
+            
+
 
 

@@ -10,10 +10,10 @@ def fix_wrong_update(s: str) -> int:
     numbers = s.split(",")
     fixed = numbers.copy()
     is_fixed = False
-    for n in numbers:
-        i = fixed.index(n)
+    # must be a generator, since 'fixed' gets altered inside loop
+    for i in (fixed.index(n) for n in numbers):
         # intersection in  reversed order
-        inter = [f for f in fixed[:i:-1] if f in rulebook[fixed[i]]]
+        inter = [_ for _ in fixed[:i:-1] if _ in rulebook[fixed[i]]]
         for k in inter:
             is_fixed = True
             fixed.remove(k)

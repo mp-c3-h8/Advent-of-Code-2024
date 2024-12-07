@@ -9,11 +9,11 @@ directions = [[-1, 0], [0, 1], [1, 0], [0, -1]]
 
 
 def move(py: int, px: int, d: int, sabotage: bool = False) -> bool:
-    local_path = defaultdict(set)
+    local_path = set()
 
     while True:
         if sabotage:
-            local_path[(py, px)].add(d)
+            local_path.add((py,px,d))
         else:
             path[(py, px)].add(d)
 
@@ -34,7 +34,7 @@ def move(py: int, px: int, d: int, sabotage: bool = False) -> bool:
                 if (ny, nx) in path and d in path[(ny, nx)]:
                     return True
                 # dont forget newly introduced paths
-                if (ny, nx) in local_path and d in local_path[(ny, nx)]:
+                if (ny, nx, d) in local_path:
                     return True
             else:
                 # try to sabotage position (ny,nx)

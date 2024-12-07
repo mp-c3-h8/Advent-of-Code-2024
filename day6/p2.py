@@ -13,7 +13,7 @@ def move(py: int, px: int, d: int, sabotage: bool = False) -> bool:
 
     while True:
         if sabotage:
-            local_path.add((py,px,d))
+            local_path.add((py, px, d))
         else:
             path[(py, px)].add(d)
 
@@ -38,21 +38,16 @@ def move(py: int, px: int, d: int, sabotage: bool = False) -> bool:
                     return True
             else:
                 # try to sabotage position (ny,nx)
-                M[ny][nx] = "#"
-                # cant put blockage where we already walked!!
-                if (ny, nx) not in path:
-                    # distinct
-                    if (ny, nx) not in obstacles:
-                        # cant be starting position
-                        if (ny, nx) != (starty, startx):
-                            # check if we send him into a loop
-                            if move(py, px, (d+1) % 4, True):
+                if (ny, nx) not in path:  # cant put blockage where we already walked!!
+                    if (ny, nx) not in obstacles:  # distinct
+                        if (ny, nx) != (starty, startx):  # cant be starting position
+                            M[ny][nx] = "#"
+                            if move(py, px, (d+1) % 4, True):  # check if we send him into a loop
                                 # thats a valid obstruction
                                 obstacles.add((ny, nx))
-
-                M[ny][nx] = "."
-
-            py, px = ny, nx  # move on
+                            M[ny][nx] = "."
+            # move on
+            py, px = ny, nx
 
 
 for i, row in enumerate(open("input.txt").read().splitlines()):

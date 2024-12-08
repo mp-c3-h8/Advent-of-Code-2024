@@ -1,24 +1,29 @@
-import itertools as it
 from math import log
 import re
+from typing import Callable
 
-add = lambda x,y: x+y
-mult = lambda x,y: x*y
-cat = lambda x,y: 10**int(log(y, 10)+1)*x+y
 
-def rec(l: list, op: tuple) -> int:
-    if len(l) == 1:
-        return l[0]
-    else:
-        i = len(l)-2
-        p = l.pop()
-        return op[i]( rec(l,op) , p )
-        
-c = 0
-for l in open("input.txt").readlines():
-    numbers = list(map(int,re.findall(r"\d+",l)))
-    ops = it.product((add,mult,cat) , repeat=len(numbers)-2)
-    if any( numbers[0] == rec(numbers[1::],op) for op in ops ):
-        c += numbers[0]
-        
-print(c)
+def add(x: int, y: int) -> int: return x+y
+def mult(x: int, y: int) -> int: return x*y
+def cat(x: int, y: int) -> int: return 10**int(log(y, 10)+1)*x+y
+
+
+def treelike(l: list[int], target: int, ops: list[Callable]) -> int:
+    N = len(l)-2
+    arr = [l[0]]
+    def f(j): return (op(a, l[j+1]) for op in ops for a in arr)
+    for i in range(N):
+        arr = list(f(i))
+
+    # dont need big array for last step
+    for b in f(N):
+        if b == target:
+            return target
+    return 0
+
+
+data = [list(map(int, re.findall(r"\d+", l)))
+        for l in open("input.txt").readlines()]
+
+print(sum(treelike(line[1::], line[0], [add, mult]) for line in data))
+print(sum(treelike(line[1::], line[0], [add, mult, cat]) for line in data))

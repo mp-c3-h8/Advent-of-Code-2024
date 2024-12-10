@@ -1,4 +1,5 @@
 from collections import Counter
+type Count = Counter[tuple[int, int]]
 
 data: list[list[int]] = []
 heads: list[tuple[int, int]] = []
@@ -19,8 +20,8 @@ def is_valid(y: int, x: int) -> bool:
     return x >= 0 and x < ncols and y >= 0 and y < nrows
 
 
-def ascend(starts: Counter[tuple[int, int]], from_height: int) -> Counter[tuple[int, int]]:
-    res: Counter[tuple[int, int]] = Counter()
+def ascend(starts: Count, from_height: int) -> Count:
+    res: Count = Counter()
     for (y, x), rating in starts.items():
         candidates = ((y+1, x), (y-1, x), (y, x+1), (y, x-1))
         for (ay, ax) in ((cy, cx) for cy, cx in candidates if is_valid(cy, cx) and data[cy][cx] == from_height+1):

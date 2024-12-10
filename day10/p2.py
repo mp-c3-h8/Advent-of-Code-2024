@@ -7,7 +7,7 @@ rating = 0
 
 for j, line in enumerate(open("input.txt").read().splitlines()):
     data.append(row := list(map(int, line)))
-    for i, n in enumerate(map(int, row)):
+    for i, n in enumerate(row):
         if n == 0:
             heads.append((j, i))
 
@@ -20,7 +20,7 @@ def is_valid(y: int, x: int) -> bool:
 
 
 def ascend(starts: Counter[tuple[int, int]], from_height: int) -> Counter[tuple[int, int]]:
-    res = Counter()
+    res: Counter[tuple[int, int]] = Counter()
     for (y, x), rating in starts.items():
         candidates = ((y+1, x), (y-1, x), (y, x+1), (y, x-1))
         for (ay, ax) in ((cy, cx) for cy, cx in candidates if is_valid(cy, cx) and data[cy][cx] == from_height+1):
@@ -36,5 +36,5 @@ for counter in (Counter({h: 1}) for h in heads):
     score += len(counter)
     rating += counter.total()
     
-print(score)
-print(rating)
+print("score:",score)
+print("rating:",rating)

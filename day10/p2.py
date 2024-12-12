@@ -1,6 +1,7 @@
 from collections import Counter
-type Count = Counter[tuple[int, int]]
 type Coords = tuple[int, int]
+type Count = Counter[Coords]
+
 
 grid: dict[Coords, int] = dict()
 heads: list[Coords] = []

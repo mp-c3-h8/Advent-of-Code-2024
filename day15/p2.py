@@ -33,12 +33,13 @@ def cascade_boxes(boxes: list[set[Box]]) -> list[set[Box]] | None:
     boxes_to_check = boxes[-1]
     next_boxes_to_check: set[Box] = set()
     for halfbox in (halfbox for box in boxes_to_check for halfbox in box):
+        # halfbox is the coordinate of either "[" or "]"
         check = halfbox+dz
         if grid[check] == "#":
             return None
-        elif dz != DIRS["<"] and grid[check] == "[":
+        elif dz != DIRS["<"] and grid[check] == "[":  # avoid infinite loop
             next_boxes_to_check.add((check, check+1))
-        elif dz != DIRS[">"] and grid[check] == "]":
+        elif dz != DIRS[">"] and grid[check] == "]":  # avoid infinite loop
             next_boxes_to_check.add((check-1, check))
     if next_boxes_to_check:
         boxes.append(next_boxes_to_check)
@@ -58,7 +59,7 @@ def box_in_front(front: complex) -> Box | None:
 
 def move_boxes(boxes: list[set[Box]]) -> None:
     for box in (box for boxes_set in boxes[::-1] for box in boxes_set):
-        l, r = box
+        l, r = box  # l / r is the coordinate or "[" / "]"
         grid[l+dz], grid[r+dz] = grid[l], grid[r]
         if dz.imag:
             grid[l], grid[r] = ".", "."

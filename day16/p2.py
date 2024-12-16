@@ -17,20 +17,21 @@ DIRS = {
 }
 
 
-def add_edges_towards_neighbor(node: tuple[int, int], neighbor: tuple[int, int], d: int) -> None:
-    # we add nodes (y,x,d) on the go, where y: row, x: column, d \in DIRS.keys()
-    n = neighbor+(d,)
-    DG.add_edge(node+(d,), n, weight=1)
-    DG.add_edge(node+((d+1) % 4,), n, weight=1001)
-    DG.add_edge(node+((d-1) % 4,), n, weight=1001)
+def add_edges_towards_neighbor(coords: tuple[int, int], neighbor: tuple[int, int], d: int) -> None:
+    # we add nodes (y,x,d) on the fly, where y: row, x: column, d \in DIRS.keys() aka direction
+    # for every (y,x) we create 4 nodes (y,x,d) with d \in {0,1,2,3}
+    n = neighbor+(d,) # creating 3-tupel via 2-tupel + 1-tupel
+    DG.add_edge(coords+(d,), n, weight=1)
+    DG.add_edge(coords+((d+1) % 4,), n, weight=1001)
+    DG.add_edge(coords+((d-1) % 4,), n, weight=1001)
 
 
 def add_edges_towards_target() -> None:
     ty, tx = TARGET
-    if data[ty][tx-1] == ".":  # west
+    if data[ty][tx-1] == ".":  # coming from west
         DG.add_edge((ty, tx-1, 0), TARGET, weight=1001)
         DG.add_edge((ty, tx-1, 1), TARGET, weight=1)
-    if data[ty+1][tx] == ".":  # south
+    if data[ty+1][tx] == ".":  # coming from south
         DG.add_edge((ty+1, tx, 0), TARGET, weight=1)
         DG.add_edge((ty+1, tx, 1), TARGET, weight=1001)
 
@@ -41,7 +42,7 @@ for y, line in enumerate(data):
         if val in ".S":
             for d, (dy, dx) in DIRS.items():
                 ny, nx = y+dy, x+dx  # coordinates of neighbor
-                if data[ny][nx] in ".S":
+                if data[ny][nx] == ".": # no need to check for S - we never visit S again
                     add_edges_towards_neighbor((y, x), (ny, nx), d)
 
 

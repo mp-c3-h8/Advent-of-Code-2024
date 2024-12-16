@@ -59,7 +59,7 @@ def box_in_front(front: complex) -> Box | None:
 
 def move_boxes(boxes: list[set[Box]]) -> None:
     for box in (box for boxes_set in boxes[::-1] for box in boxes_set):
-        l, r = box  # l / r is the coordinate or "[" / "]"
+        l, r = box  # l / r is the coordinate of "[" / "]"
         grid[l+dz], grid[r+dz] = grid[l], grid[r]
         if dz.imag:
             grid[l], grid[r] = ".", "."

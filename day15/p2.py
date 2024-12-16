@@ -59,10 +59,9 @@ def box_in_front(front: complex) -> Box | None:
 
 def move_boxes(boxes: list[set[Box]]) -> None:
     for box in (box for boxes_set in boxes[::-1] for box in boxes_set):
-        l, r = box  # l / r is the coordinate of "[" / "]"
-        grid[l+dz], grid[r+dz] = grid[l], grid[r]
-        if dz.imag:
-            grid[l], grid[r] = ".", "."
+        l, r = box
+        grid[l], grid[r] = ".", "."
+        grid[l+dz], grid[r+dz] = "[", "]"
 
 
 def move() -> None:
@@ -83,7 +82,6 @@ def print_map(move: str) -> None:
     print("Move " + move + ":")
     gen = ((val, z.real == len(warehouse[0])*2-1) for z, val in grid.items())
     print("".join(val + "\n" * newline for val, newline in gen))
-
 
 for m in moves:
     dz = DIRS[m]

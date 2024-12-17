@@ -9,10 +9,10 @@ def calc(a: int):
     b = b ^ c
     return b % 8
 
-# reverse order: A must be 7 before last step to yield 0
-candidates = [7]
+# reverse order: A must be 0 at the end to terminate
+candidates = [0]
 
-for target in reversed(data[:len(data)-1]):
+for target in reversed(data):
     temp = []
     for cand in candidates:
         for A in range(cand * 8,(cand+1) * 8):

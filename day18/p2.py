@@ -23,13 +23,10 @@ def build_graph(number_rocks: int):
 
 print("Part 1:", shortest_path_length(build_graph(1024), SOURCE, TARGET))
 
-l, r = 1024, len(rocks)-1
-while r-l > 1:
+l, r = 1024, len(rocks)
+while l < r-1:
     m = (l+r) // 2
     G = build_graph(m)
-    if has_path(G, SOURCE, TARGET):
-        l = m
-    else:
-        r = m
-
+    l,r = (m,r) if has_path(G, SOURCE, TARGET) else (l,m)
+    
 print("NO WAY OUT AFTER BYTE =", r, "AT (y,x) =", rocks[r-1])

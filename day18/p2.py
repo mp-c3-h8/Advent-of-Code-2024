@@ -1,5 +1,5 @@
 from itertools import product
-from networkx import Graph, shortest_path_length
+from networkx import Graph, has_path, shortest_path_length
 
 data = open("input.txt").read().splitlines()
 DIMY, DIMX = 71, 71
@@ -27,10 +27,9 @@ l, r = 1024, len(rocks)-1
 while r-l > 1:
     m = (l+r) // 2
     G = build_graph(m)
-    try:
-        shortest_path_length(G, SOURCE, TARGET)
+    if has_path(G, SOURCE, TARGET):
         l = m
-    except:
+    else:
         r = m
 
 print("NO WAY OUT AFTER BYTE =", r, "AT (y,x) =", rocks[r-1])

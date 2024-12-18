@@ -1,6 +1,5 @@
 from itertools import product
-from networkx import shortest_path_length
-from networkx import grid_2d_graph
+from networkx import Graph, shortest_path_length
 
 data = open("input.txt").read().splitlines()
 DIMY, DIMX = 71, 71
@@ -11,12 +10,18 @@ rocks = [(y, x) for line in data for x, y in [map(int, line.split(","))]]
 
 
 def build_graph(number_rocks: int):
-    G = grid_2d_graph(DIMY, DIMX)
-    for rock in rocks[:number_rocks]:
-        G.remove_node(rock)
+    G = Graph()
+    rr = set(rocks[:number_rocks])
+    for y, x in product(range(DIMY), range(DIMX)):
+        if (y, x) in rr:
+            continue
+        for ny, nx in [(y, x+1), (y, x-1), (y+1, x), (y-1, x)]:
+            if (ny, nx) not in rr:
+                G.add_edge((y, x), (ny, nx))
     return G
 
-print("Part 1:", shortest_path_length(build_graph(1024),SOURCE,TARGET))
+
+print("Part 1:", shortest_path_length(build_graph(1024), SOURCE, TARGET))
 
 l, r = 1024, len(rocks)-1
 while r-l > 1:

@@ -62,22 +62,13 @@ for (curry, currx), curr_cost in path.items():
         oy, ox = curry+cheaty, currx+cheatx
         if (oy, ox) not in grid:
             continue
-        if (oy, ox) == target and curr_cost+cheatl < path[target]:
-            best = path[target] + 1
-        else:
-            best = max((path[(oy+ny, ox+nx)] for (ny, nx) in DIRS if (oy+ny, ox+nx)
-                       in path and curr_cost+cheatl+1 < path[(oy+ny, ox+nx)]), default=False)
-        if best:
-            saved = best - curr_cost - cheatl-1
+        # no need to check neighbors ?!
+        if (oy, ox) in path and (saved := path[(oy, ox)] - curr_cost - cheatl) > 0 :
             cheats[saved].add(((currx, curry), (oy, ox)))
 
 res = 0
 for saved, c in cheats.items():
     if saved >= 100:
         res += len(c)
-        #print(len(c),"mal",saved,"picos")
 
 print("Part 2:", res)
-
-# for p in cheat_destinations(1):
-#     print(p)

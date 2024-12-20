@@ -1,4 +1,6 @@
-from collections import defaultdict
+
+
+from typing import Iterator
 
 
 type Coords = tuple[int, int]
@@ -41,34 +43,25 @@ def get_path() -> dict[Coords, int]:
     return path
 
 
-def cheat_destinations(l: int):
-    x = l
-    for bound in range(l+1):
-        for y in range(-bound, bound+1):
+def cheat_destinations(dist: int) -> Iterator[tuple[Coords,int]]:
+    for y in range(-dist, dist+1):
+        left = dist - abs(y)
+        for x in range(-left, left+1):
             yield (y, x), abs(y)+abs(x)
-        x -= 1
-    x = -l
-    for bound in range(l):
-        for y in range(-bound, bound+1):
-            yield (y, x), abs(y)+abs(x)
-        x += 1
 
 
 path = get_path()
 
-cheats: dict[int, set[tuple[Coords, Coords]]] = defaultdict(set)
+res = {2: 0, 20:0}
 for (curry, currx), curr_cost in path.items():
-    for (cheaty, cheatx), cheatl in cheat_destinations(20):
-        oy, ox = curry+cheaty, currx+cheatx
-        if (oy, ox) not in grid:
-            continue
-        # no need to check neighbors ?!
-        if (oy, ox) in path and (saved := path[(oy, ox)] - curr_cost - cheatl) > 0 :
-            cheats[saved].add(((currx, curry), (oy, ox)))
+    for n in (2,20):
+        for (dy, dx), dl in cheat_destinations(n):
+            ny, nx = curry+dy, currx+dx
+            if (ny, nx) not in grid:
+                continue
+            if (ny, nx) in path and path[(ny, nx)] - curr_cost - dl >= 100:
+                res[n] += 1
+ 
+print("Part 1:", res[2])
+print("Part 2:", res[20])
 
-res = 0
-for saved, c in cheats.items():
-    if saved >= 100:
-        res += len(c)
-
-print("Part 2:", res)

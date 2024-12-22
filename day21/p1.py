@@ -103,7 +103,7 @@ def printMoveset(moveset: Moveset):
     for move in moveset:
         printMove(move)
 
-data = ["140A","180A","176A","805A","638A"]
+data = open("input.txt").read().splitlines()
 res = 0
 for code in data:
     l = 0

@@ -1,7 +1,8 @@
 from collections import deque
 from itertools import combinations, product
 
-from numpy import prod
+from bitstring import Bits
+from more_itertools import set_partitions
 
 inputs, gates = open("input.txt").read().split("\n\n")
 
@@ -28,8 +29,8 @@ def goesfirst(input: str) -> bool:
 
 
 BITS = len(testcase) // 2
-operations: list[tuple[str, str, str, str]] = []
-STARTER: list[tuple[str, str, str, str]] = []
+operations: list[list[str]] = []
+# STARTER: list[tuple[str, str, str, str]] = []
 SEEN: set[str] = set()
 
 
@@ -39,12 +40,12 @@ for gate in gates.splitlines():
     left, operand, right, output = splitted
 
     if goesfirst(left) and goesfirst(right):
-        STARTER.append((left, operand, right, output))
+        # STARTER.append((left, operand, right, output))
         SEEN.add(left)
         SEEN.add(right)
-        SEEN.add(output)
-    else:
-        operations.append((left, operand, right, output))
+        # SEEN.add(output)
+    # else:
+    operations.append([left, operand, right, output])
 
 
 def sortOperations():
@@ -62,10 +63,10 @@ def sortOperations():
     operations = ordered
 
 
-def sim(x: tuple, y: tuple) -> bool:
-    z = [n & m for (n, m) in zip(x, y)]
-    values: dict[str, int] = dict()
-    for (left, operand, right, output) in STARTER:
+def sim(x: Bits, y: Bits) -> bool:
+
+    z = Bits(uint=(x.int + y.int), length=2*BITS)
+    for (left, operand, right, output) in operations:
         if left.startswith("x"):
             l = x[int(left[1:])]
         elif left.startswith("y"):
@@ -76,70 +77,47 @@ def sim(x: tuple, y: tuple) -> bool:
         elif right.startswith("y"):
             r = y[int(right[1:])]
 
-        c = calc(l, r, operand)
-        values[output] = c
+        c = calc(int(l), int(r), operand)
 
         if output.startswith("z") and z[int(output[1:])] != c:
             return False
 
-    for (left, operand, right, output) in operations:
-        c = calc(values[left], values[right], operand)
-        values[output] = c
-
-        if output.startswith("z") and z[int(output[1:])] != c:
-            return False
-
-    # res = {k: v for k, v in values.items() if k.startswith("z")}
-    # res = [v for k, v in sorted(res.items())]
-    # return res
     return True
 
 
 def simEveryInput() -> bool:
+    # x = Bits(uint=0, length=BITS)
+    # return sim(x,x)
     for x in product(range(2), repeat=BITS):
+        x = Bits(x)
         if not sim(x, x):
             return False
 
-    for x, y in combinations(product(range(2), repeat=BITS), 2):
-        if not sim(x, y):
-            return False
+    # for x, y in combinations(product(range(2), repeat=BITS), 2):
+    #     if not sim(x, y):
+    #         return False
     return True
 
 
+def swap(n: int, m: int):
+    operations[n][3],operations[m][3] = operations[m][3],operations[n][3]
+
 num = 0
-for s in combinations(range(len(STARTER)), 2):
-    tt = [i for i in range(len(STARTER)) if i not in s]
-    for t in combinations(tt, 2):
-        sw1 = STARTER[s[0]][:3] + (STARTER[s[1]][3],)
-        sw2 = STARTER[s[1]][:3] + (STARTER[s[0]][3],)
-        sw3 = STARTER[t[0]][:3] + (STARTER[t[1]][3],)
-        sw4 = STARTER[t[1]][:3] + (STARTER[t[0]][3],)
-        STARTER[s[0]] = sw1
-        STARTER[s[1]] = sw2
-        STARTER[t[0]] = sw3
-        STARTER[t[1]] = sw4
+# way too many possible swaps - cant bruteforce
+for s in combinations(range(len(operations)), 4):
+    for t in set_partitions(s,min_size=2,max_size=2):
+        # for u in t:
+        #     swap(u[0],u[1])
+
         # sortOperations()
-        res = simEveryInput()
+        # res = simEveryInput()
 
-        if res:
-            print("ERFOLG MIT")
-            print("SWAPPE",sw1,"mit",sw2)
-            print("SWAPPE",sw3,"mit",sw4)
+        # if res:
+        #     print("ERFOLG MIT")
+        #     print("SWAPPE", t)
             
-        sw1 = STARTER[s[0]][:3] + (STARTER[s[1]][3],)
-        sw2 = STARTER[s[1]][:3] + (STARTER[s[0]][3],)
-        sw3 = STARTER[t[0]][:3] + (STARTER[t[1]][3],)
-        sw4 = STARTER[t[1]][:3] + (STARTER[t[0]][3],)    
-        STARTER[s[0]] = sw1
-        STARTER[s[1]] = sw2
-        STARTER[t[0]] = sw3
-        STARTER[t[1]] = sw4
-
-
+            
+        # for u in t:
+        #     swap(u[0],u[1])
+        num += 1
 print(num)
-
-
-
-# sortOperations()
-# test = sim(tuple(testcase[:len(testcase)//2]),tuple(testcase[len(testcase)//2:]))
-# print(sum(val * 2**i for i, val in enumerate(test)))
